@@ -1,8 +1,8 @@
 import { Router } from "express";
-import cakesRouter from "./cakes.js";
-import clientsRouter from "./clients.js";
-import orderRouter from "./order.js";
-import ordersRouter from "./orders.js";
+import cakesRouter from "./cakes.routes.js";
+import clientsRouter from "./clients.routes.js";
+import orderRouter from "./order.routes.js";
+import ordersRouter from "./orders.routes.js";
 
 const router = Router();
 router.use(cakesRouter);

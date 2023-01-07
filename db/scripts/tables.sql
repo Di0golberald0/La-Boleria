@@ -1,23 +1,23 @@
 CREATE TABLE cakes (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    id SERIAL NOT NULL PRIMARY KEY,
+    name VARCHAR NOT NULL UNIQUE,
     price NUMERIC NOT NULL,
     image VARCHAR NOT NULL,
     description TEXT NOT NULL
 );
 
 CREATE TABLE clients (
-    id SERIAL PRIMARY KEY,
+    id SERIAL NOT NULL PRIMARY KEY,
     name VARCHAR NOT NULL,
     address VARCHAR NOT NULL,
     phone VARCHAR NOT NULL
 );
 
-CREATE TABLE ordes (
+CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    "cakeId" INTEGER REFERENCES "cakes"("id"),
-    "clientId" INTEGER REFERENCES "clients"("id"),
-    quantity INTEGER,
-    createdAt TIMESTAMP,
-    totalPrice NUMERIC
+    "cakeId" INTEGER NOT NULL REFERENCES  "cakes"("id"),
+    "clientId" INTEGER NOT NULL REFERENCES  "clients"("id"),
+    quantity INTEGER NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+    totalPrice NUMERIC NOT NULL
 );
