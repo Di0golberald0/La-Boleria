@@ -3,7 +3,7 @@ CREATE TABLE cakes (
     name VARCHAR NOT NULL UNIQUE,
     price NUMERIC NOT NULL,
     image VARCHAR NOT NULL,
-    description TEXT NOT NULL
+    description TEXT
 );
 
 CREATE TABLE clients (
