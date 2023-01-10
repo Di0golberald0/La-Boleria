@@ -4,6 +4,6 @@ import { validateSchema } from "../middlewares/schemaValidator.js";
 import orderSchema from "../schemas/orderSchema.js";
 
 const orderRouter = Router();
-orderRouter.post("/order", validateSchema(orderSchema), order);
+orderRouter.post("/order", validateSchema(orderSchema, 422), order);
 
 export default orderRouter;

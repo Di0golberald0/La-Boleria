@@ -1,10 +1,15 @@
 import joi from 'joi';
 
-const cakeSchema = joi.object({
+export const cakeSchema = joi.object({
   name: joi.string().min(2).required(),
-  price: joi.number().required(),
-  image: joi.string().uri().required(),
+  price: joi.number().positive().required(),
+  image: joi.string().allow("").required(),
   description: joi.string().required()
 });
 
-export default cakeSchema;
+export const imageSchema = joi.object({
+  name: joi.string().min(2).required(),
+  price: joi.number().positive().required(),
+  image: joi.string().uri().required(),
+  description: joi.string().required()
+});
