@@ -32,15 +32,13 @@ export async function order(req, res) {
         
         return res.sendStatus(201);
     } catch (error) {
-        return res.send(error).status(500);
+        return res.status(500).send(error);
     }
 }
 
 export async function orders(req, res) {
     try {
         const date = req.query.date;
-        console.log("date", date);
-
         const ordersCreated = await connection.query(
             `SELECT 
             clients.id as "clientId", 
@@ -98,12 +96,12 @@ export async function orders(req, res) {
         }
 
         if(ordersList.length < 1) {
-            return res.sendStatus(404);
+            return res.status(404).send([]);
         }
 
-        res.send(ordersList).status(200);
+        res.status(200).send(ordersList);
     } catch (error) {
-        res.send(error).status(500);
+        res.status(500).send(error);
     }
 }
 
@@ -161,8 +159,8 @@ export async function orderByid(req, res) {
             totalPrice: ordersCreated.rows[0].totalprice
         }
 
-        res.send(orderById).status(200);
+        res.status(200).send(orderById);
     } catch (error) {
-        res.send(error).status(500);
+        res.status(500).send(error);
     }
 }

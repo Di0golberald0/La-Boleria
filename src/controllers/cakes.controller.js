@@ -22,6 +22,6 @@ export async function cakes(req, res) {
 
         return res.sendStatus(201);
     } catch (error) {
-        return res.send(error).status(500);
+        return res.status(500).send(error);
     }
 }
