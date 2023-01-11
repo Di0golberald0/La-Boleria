@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev" : "npx run src/app.js"
+    "start": "node ./src/index.js",
+    "dev" : "npx run src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Diogo Lima Beraldo",
   "license": "ISC",
