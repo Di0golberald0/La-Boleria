@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { connection } from "../../db/database.js";
 
 export async function clients(req, res) {
@@ -21,7 +22,7 @@ export async function ordersByClient(req, res) {
         const id = req.params.id;
 
         const existingClient = await connection.query(
-            `SELECT * FROM clients WHERE id = $1 `,
+            `SELECT * FROM clients WHERE id=$1 `,
             [id]
         );
         
@@ -32,9 +33,9 @@ export async function ordersByClient(req, res) {
         const ordersByClientList = await connection.query(
             `SELECT  
             orders.id as "orderId", 
-            quantity, 
-            "createdAt", 
-            totalprice as "totalPrice",
+            orders.quantity, 
+            orders."createdAt", 
+            orders.totalprice as "totalPrice",
             cakes.name as "cakeName"
                 FROM orders
                 JOIN cakes ON orders."cakeId"=cakes.id
@@ -42,30 +43,25 @@ export async function ordersByClient(req, res) {
             `,
             [id]
         );
-
+        
         if(ordersByClientList.rowCount < 1) {
             return res.status(404).send('client has not made any orders');
         }
 
+        const ordersByClient = [];
+        
         for(let i = 0; i < ordersByClientList.rows.length; i++) {
             const order = {
-                orderId: ordersCreated.rows[0].orderId,
-                createdAt: dayjs(ordersCreated.rows[0].createdAt).format("YYYY-MM-DD HH:mm"),
-                quantity: ordersCreated.rows[0].quantity,
-                totalPrice: ordersCreated.rows[0].totalprice,
-                cakeName: ordersCreated.rows[0].cakeName
+                orderId: ordersByClientList.rows[i].orderId,
+                createdAt: dayjs(ordersByClientList.rows[i].createdAt).format("YYYY-MM-DD HH:mm"),
+                quantity: ordersByClientList.rows[i].quantity,
+                totalPrice: ordersByClientList.rows[i].totalPrice,
+                cakeName: ordersByClientList.rows[i].cakeName
             }
 
             ordersByClient.push(order);
         }
-        const ordersByClient = {
-            orderId: ordersCreated.rows[0].orderId,
-            createdAt: dayjs(ordersCreated.rows[0].createdAt).format("YYYY-MM-DD HH:mm"),
-            quantity: ordersCreated.rows[0].quantity,
-            totalPrice: ordersCreated.rows[0].totalprice,
-            cakeName: ordersCreated.rows[0].cakeName
-        }
-
+        
         res.status(200).send(ordersByClient);
     } catch (error) {
         res.status(500).send(error);
