@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { connection } from "../../db/database.js";
 
 export async function order(req, res) {
@@ -37,17 +38,130 @@ export async function order(req, res) {
 
 export async function orders(req, res) {
     try {
-        console.log("orders");
-        res.sendStatus(200);
+        const date = req.query.date;
+        console.log("date", date);
+
+        const ordersCreated = await connection.query(
+            `SELECT 
+            clients.id as "clientId", 
+            clients.name as "clientName", 
+            clients.address, 
+            clients.phone, 
+            cakes.id as "cakeId", 
+            cakes.name as "cakeName", 
+            cakes.price, cakes.image, 
+            cakes.description, 
+            orders.id as "orderId", 
+            quantity, 
+            "createdAt", 
+            totalprice 
+                FROM orders
+                JOIN cakes ON orders."cakeId"=cakes.id
+                JOIN clients ON orders."clientId"=clients.id
+            `
+        );
+
+        if(ordersCreated.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+
+        const ordersList = [];
+
+        for(let i = 0; i < ordersCreated.rows.length; i++) {
+            const client = {
+                id: ordersCreated.rows[i].clientId,
+                name: ordersCreated.rows[i].clientName,
+                address: ordersCreated.rows[i].address,
+                phone: ordersCreated.rows[i].phone
+            }
+
+            const cake = {
+                id: ordersCreated.rows[i].cakeId,
+                name: ordersCreated.rows[i].cakeName,
+                price: ordersCreated.rows[i].price,
+                description: ordersCreated.rows[i].description,
+                image: ordersCreated.rows[i].image
+            }
+
+            const order = {
+                client,
+                cake,
+                orderId: ordersCreated.rows[i].orderId,
+                createdAt: dayjs(ordersCreated.rows[i].createdAt).format("YYYY-MM-DD HH:mm"),
+                quantity: ordersCreated.rows[i].quantity,
+                totalPrice: ordersCreated.rows[i].totalprice
+            }
+
+            if(!date || date === dayjs(order.createdAt).format("YYYY-MM-DD")) {
+                ordersList.push(order);
+            }
+        }
+
+        if(ordersList.length < 1) {
+            return res.sendStatus(404);
+        }
+
+        res.send(ordersList).status(200);
     } catch (error) {
         res.send(error).status(500);
     }
 }
 
-export async function ordersInfo(req, res) {
+export async function orderByid(req, res) {
     try {
-        console.log("ordersInfo");
-        res.sendStatus(200);
+        const id = req.params.id;
+        
+        const ordersCreated = await connection.query(
+            `SELECT 
+            clients.id as "clientId", 
+            clients.name as "clientName", 
+            clients.address, 
+            clients.phone, 
+            cakes.id as "cakeId", 
+            cakes.name as "cakeName", 
+            cakes.price, cakes.image, 
+            cakes.description, 
+            orders.id as "orderId", 
+            quantity, 
+            "createdAt", 
+            totalprice 
+                FROM orders
+                JOIN cakes ON orders."cakeId"=cakes.id
+                JOIN clients ON orders."clientId"=clients.id
+                WHERE orders.id=$1
+            `,
+            [id]
+        );
+
+        if(ordersCreated.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+        
+        const client = {
+            id: ordersCreated.rows[0].clientId,
+            name: ordersCreated.rows[0].clientName,
+            address: ordersCreated.rows[0].address,
+            phone: ordersCreated.rows[0].phone
+        }
+    
+        const cake = {
+            id: ordersCreated.rows[0].cakeId,
+            name: ordersCreated.rows[0].cakeName,
+            price: ordersCreated.rows[0].price,
+            description: ordersCreated.rows[0].description,
+            image: ordersCreated.rows[0].image
+        }
+    
+        const orderById = {
+            client,
+            cake,
+            orderId: ordersCreated.rows[0].orderId,
+            createdAt: dayjs(ordersCreated.rows[0].createdAt).format("YYYY-MM-DD HH:mm"),
+            quantity: ordersCreated.rows[0].quantity,
+            totalPrice: ordersCreated.rows[0].totalprice
+        }
+
+        res.send(orderById).status(200);
     } catch (error) {
         res.send(error).status(500);
     }
